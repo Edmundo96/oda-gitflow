@@ -1,5 +1,4 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
+Este es el proyecto ojo de Dios abarrotero, donde la tienda de abarrotes se digitaliza y se vende con mayor eficacia.
 ## Getting Started
 
 First, run the development server:
