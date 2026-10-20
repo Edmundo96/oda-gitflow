@@ -1,19 +1,19 @@
 "use client";
 
-import type { FormEvent } from "react";
+import type { SubmitEvent } from "react";
 import { Icon } from "@/components/ui/Icon";
 
 interface ProductSearchProps {
   query: string;
   onSearch: (query: string) => void;
-  onScan: (barcode: string) => void;
+  onSubmit: (query: string) => void;
 }
 
-export function ProductSearch({ query, onSearch, onScan }: ProductSearchProps) {
-  function submitSearch(event: FormEvent<HTMLFormElement>) {
+export function ProductSearch({ query, onSearch, onSubmit }: ProductSearchProps) {
+  function submitSearch(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     const value = query.trim();
-    if (value) onScan(value);
+    if (value) onSubmit(value);
     else onSearch("");
   }
 
@@ -23,20 +23,23 @@ export function ProductSearch({ query, onSearch, onScan }: ProductSearchProps) {
       onSubmit={submitSearch}
       role="search"
     >
-      <Icon className="ml-2 text-2xl text-[#00652c]" name="barcode" />
+      <Icon className="ml-2 hidden text-2xl text-[#00652c] min-[360px]:block" name="barcode" />
+      {/* text-base (16px): con menos, iOS Safari hace zoom al enfocar el campo. */}
       <input
         aria-label="Buscar o escanear producto"
-        className="min-w-0 flex-1 rounded-xl bg-[#f2f3ff] px-3 py-3 text-sm outline-none placeholder:text-[#6f7a6e] focus:ring-2 focus:ring-[#15803d]"
+        autoComplete="off"
+        className="min-w-0 flex-1 rounded-xl bg-[#f2f3ff] px-3 py-2.5 text-base outline-none placeholder:text-sm placeholder:text-[#6f7a6e] focus:ring-2 focus:ring-[#15803d]"
+        enterKeyHint="search"
         onChange={(event) => {
           onSearch(event.target.value);
         }}
-        placeholder="Escanear código de barras o buscar..."
+        placeholder="Escanear código o buscar..."
         value={query}
       />
       {query && (
         <button
           aria-label="Limpiar búsqueda"
-          className="rounded-lg p-2 text-[#6f7a6e] hover:bg-[#eaedff]"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-[#6f7a6e] hover:bg-[#eaedff]"
           onClick={() => {
             onSearch("");
           }}
@@ -47,7 +50,7 @@ export function ProductSearch({ query, onSearch, onScan }: ProductSearchProps) {
       )}
       <button
         aria-label="Buscar producto"
-        className="rounded-xl bg-[#15803d] px-4 py-3 text-white transition hover:bg-[#00652c]"
+        className="flex h-11 w-12 shrink-0 items-center justify-center rounded-xl bg-[#15803d] text-white transition hover:bg-[#00652c]"
         type="submit"
       >
         <Icon name="search" />
