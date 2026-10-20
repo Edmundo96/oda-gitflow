@@ -1,13 +1,37 @@
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
 @import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-plus-jakarta), Arial, Helvetica, sans-serif;
+}
+
+/* Pantallas bajas (teléfono en horizontal): header no fijo y navegación compacta. */
+@custom-variant short (@media (max-height: 30rem));
+/* Altura suficiente para paneles fijos (ticket del POS). */
+@custom-variant tall (@media (min-height: 40rem));
+
+/* Margen lateral que respeta el notch en horizontal (requiere viewport-fit=cover). */
+@utility px-safe {
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
+}
+
+/* Espacio para que la barra de navegación inferior no tape el final del contenido. */
+@utility pb-nav {
+  padding-bottom: calc(var(--nav-h) + 1rem + env(safe-area-inset-bottom));
+}
 
 :root {
   color-scheme: light;
+  --nav-h: 4rem;
+}
+
+@media (max-height: 30rem) {
+  :root {
+    --nav-h: 3rem;
+  }
 }
 
 body {
-  margin: 0;
   background: #faf8ff;
   color: #131b2e;
-  font-family: "Plus Jakarta Sans", Arial, Helvetica, sans-serif;
 }

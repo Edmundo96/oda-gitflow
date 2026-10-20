@@ -1,0 +1,23 @@
+# Políticas de seguridad de la cadena de suministro (pnpm 11).
+
+# No instalar versiones publicadas hace menos de 7 días (en minutos).
+minimumReleaseAge: 10080
+
+# Fallar si un paquete pierde su nivel de confianza (provenance / publicación confiable).
+trustPolicy: no-downgrade
+# Las tomas de control se detectan en horas o días; versiones con más de 30 días publicadas
+# (p. ej. backports de ramas antiguas sin provenance) ya no se consideran de riesgo.
+trustPolicyIgnoreAfter: 43200
+
+# Prohibir dependencias transitivas desde git o tarballs.
+blockExoticSubdeps: true
+
+# Los scripts de instalación de dependencias solo se ejecutan si se aprueban explícitamente.
+strictDepBuilds: true
+
+# Decisión explícita por paquete. false = no ejecutar su script de instalación.
+allowBuilds:
+  # Su postinstall solo descarga un binario de respaldo; ya llega por @unrs/resolver-binding-<plataforma>.
+  unrs-resolver: false
+
+engineStrict: true

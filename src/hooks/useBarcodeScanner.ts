@@ -19,6 +19,13 @@ export function useBarcodeScanner(onScan: (barcode: string) => void) {
     function handleKeyDown(event: KeyboardEvent) {
       const now = Date.now();
 
+      // Una tecla mantenida (autorepetición) o la composición de un IME no son un escaneo.
+      if (event.repeat || event.isComposing) {
+        buffer = "";
+        lastKeyTime = 0;
+        return;
+      }
+
       if (event.key === "Enter") {
         if (buffer.length >= MIN_SCAN_LENGTH) {
           event.preventDefault();

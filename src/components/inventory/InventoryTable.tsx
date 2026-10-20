@@ -1,99 +1,112 @@
 "use client";
 
+import Image from "next/image";
 import type { Product } from "@/types/product";
-import { Icon } from "@/components/ui/Icon";
+import { CategoryIcon } from "@/components/ui/CategoryIcon";
+import { Icon, type IconName } from "@/components/ui/Icon";
+import { currency } from "@/lib/format";
+import { getStockStatus, type StockStatus } from "@/lib/stock";
 
 interface InventoryTableProps {
   products: Product[];
   onStockChange: (productId: string, stock: number) => void;
+  onEdit: (product: Product) => void;
 }
 
-const currency = new Intl.NumberFormat("es-MX", {
-  style: "currency",
-  currency: "MXN",
-});
+const statusBadge: Record<StockStatus, { label: string; icon: IconName; className: string }> = {
+  out: { label: "Agotado", icon: "packageOut", className: "bg-[#ba1a1a] text-white" },
+  low: { label: "Bajo Stock", icon: "alert", className: "bg-[#ffdad6] text-[#ba1a1a]" },
+  ok: { label: "En Stock", icon: "packageOk", className: "bg-[#95f8a7] text-[#00652c]" },
+};
 
-export function InventoryTable({ products, onStockChange }: InventoryTableProps) {
+export function InventoryTable({ products, onStockChange, onEdit }: InventoryTableProps) {
   if (products.length === 0) {
     return (
-      <p className="rounded-2xl bg-white p-8 text-center text-sm text-[#6f7a6e]">
-        No se encontraron productos.
-      </p>
+      <div className="flex flex-col items-center gap-2 rounded-2xl bg-white p-8 text-center text-sm text-[#6f7a6e]">
+        <Icon className="text-3xl" name="notFound" />
+        <p>No se encontraron productos.</p>
+      </div>
     );
   }
 
   return (
-    <div className="space-y-3">
+    <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
       {products.map((product) => {
-        const lowStock = product.stock <= product.minStock;
+        const status = getStockStatus(product);
+        const badge = statusBadge[status];
+        const needsRestock = status !== "ok";
 
         return (
-          <article className="rounded-2xl bg-white p-3 shadow-sm" key={product.id}>
-            <div className="flex items-start justify-between gap-3">
+          <article className="flex min-w-0 flex-col rounded-2xl bg-white p-3 shadow-sm" key={product.id}>
+            {/* flex-1: en la cuadrícula las tarjetas miden igual y los controles quedan alineados abajo. */}
+            <div className="flex flex-1 items-start justify-between gap-3">
               <div className="flex min-w-0 items-center gap-3">
-                <div
-                  aria-label={product.name}
-                  className="h-14 w-14 shrink-0 rounded-xl bg-cover bg-center"
-                  role="img"
-                  style={{ backgroundImage: `url("${product.image}")` }}
+                <Image
+                  alt=""
+                  className="h-14 w-14 shrink-0 rounded-xl bg-[#eaedff] object-cover"
+                  height={56}
+                  src={product.image}
+                  width={56}
                 />
                 <div className="min-w-0">
-                  <h2 className="truncate font-semibold">{product.name}</h2>
-                  <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-[#6f7a6e]">
-                    <span>#{product.barcode}</span>
-                    <span className="rounded bg-[#eaedff] px-1.5 py-0.5">{product.category}</span>
+                  <h2 className="line-clamp-2 font-semibold leading-snug">{product.name}</h2>
+                  <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-[#6f7a6e]">
+                    <span className="flex items-center gap-1">
+                      <Icon name="barcode" /> {product.barcode}
+                    </span>
+                    <span className="flex items-center gap-1 whitespace-nowrap rounded bg-[#eaedff] px-1.5 py-0.5">
+                      <CategoryIcon category={product.category} /> {product.category}
+                    </span>
                   </div>
                 </div>
               </div>
-              <span
-                className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-bold ${
-                  lowStock
-                    ? "bg-[#ffdad6] text-[#ba1a1a]"
-                    : "bg-[#95f8a7] text-[#00652c]"
-                }`}
-              >
-                {lowStock ? "Bajo Stock" : "En Stock"}
+              <span className={`flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold ${badge.className}`}>
+                <Icon name={badge.icon} /> {badge.label}
               </span>
             </div>
-            <div className="mt-3 flex items-center justify-between gap-2 rounded-xl bg-[#f2f3ff] px-3 py-2">
+            {/* flex-wrap + ml-auto: en pantallas angostas los botones bajan a su propia fila alineados a la derecha. */}
+            <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl bg-[#f2f3ff] px-3 py-2">
               <div>
                 <p className="text-xs text-[#6f7a6e]">Precio Venta</p>
                 <p className="text-lg font-extrabold">{currency.format(product.price)}</p>
               </div>
-              <div className="text-right">
-                <p className={`text-xs ${lowStock ? "text-[#ba1a1a]" : "text-[#6f7a6e]"}`}>
-                  {lowStock ? `Mínimo: ${product.minStock}` : "Disponible"}
+              <div>
+                <p className={`text-xs ${needsRestock ? "text-[#ba1a1a]" : "text-[#6f7a6e]"}`}>
+                  {needsRestock ? `Mínimo: ${product.minStock}` : "Disponible"}
                 </p>
-                <p className={`font-bold ${lowStock ? "text-[#ba1a1a]" : "text-[#00652c]"}`}>
+                <p className={`font-bold ${needsRestock ? "text-[#ba1a1a]" : "text-[#00652c]"}`}>
                   {product.stock} uds
                 </p>
               </div>
-              <div className="flex items-center gap-1 rounded-lg bg-white p-0.5">
+              <div className="ml-auto flex items-center gap-2">
+                <div className="flex items-center gap-1 rounded-lg bg-white p-0.5">
+                  <button
+                    aria-label={`Restar stock de ${product.name}`}
+                    className="flex h-10 w-10 items-center justify-center rounded-md hover:bg-[#eaedff] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
+                    disabled={product.stock <= 0}
+                    onClick={() => onStockChange(product.id, product.stock - 1)}
+                    type="button"
+                  >
+                    <Icon name="minus" />
+                  </button>
+                  <button
+                    aria-label={`Sumar stock de ${product.name}`}
+                    className="flex h-10 w-10 items-center justify-center rounded-md text-[#00652c] hover:bg-[#eaedff]"
+                    onClick={() => onStockChange(product.id, product.stock + 1)}
+                    type="button"
+                  >
+                    <Icon name="add" />
+                  </button>
+                </div>
                 <button
-                  aria-label={`Restar stock de ${product.name}`}
-                  className="h-9 w-9 rounded-md text-lg hover:bg-[#eaedff]"
-                  onClick={() => onStockChange(product.id, Math.max(0, product.stock - 1))}
+                  aria-label={`Editar ${product.name}`}
+                  className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#eaedff] text-[#3f493f] hover:bg-[#dae2fd]"
+                  onClick={() => onEdit(product)}
                   type="button"
                 >
-                  −
-                </button>
-                <button
-                  aria-label={`Sumar stock de ${product.name}`}
-                  className="h-9 w-9 rounded-md text-lg font-semibold text-[#00652c] hover:bg-[#eaedff]"
-                  onClick={() => onStockChange(product.id, product.stock + 1)}
-                  type="button"
-                >
-                  +
+                  <Icon name="edit" />
                 </button>
               </div>
-              <button
-                aria-label={`Editar ${product.name}`}
-                className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#eaedff] text-[#3f493f]"
-                onClick={() => window.alert(`Edición de ${product.name}: conecta el formulario de producto.`)}
-                type="button"
-              >
-                <Icon name="edit" />
-              </button>
             </div>
           </article>
         );
