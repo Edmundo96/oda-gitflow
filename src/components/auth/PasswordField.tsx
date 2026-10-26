@@ -10,11 +10,21 @@ interface PasswordFieldProps {
   onChange: (value: string) => void;
   autoComplete: "current-password" | "new-password";
   minLength?: number;
+  maxLength?: number;
   /** Acción junto a la etiqueta, p. ej. "¿Olvidó su contraseña?". */
   action?: ReactNode;
 }
 
-export function PasswordField({ id, label, value, onChange, autoComplete, minLength, action }: PasswordFieldProps) {
+export function PasswordField({
+  id,
+  label,
+  value,
+  onChange,
+  autoComplete,
+  minLength,
+  maxLength,
+  action,
+}: PasswordFieldProps) {
   const [visible, setVisible] = useState(false);
 
   return (
@@ -30,6 +40,7 @@ export function PasswordField({ id, label, value, onChange, autoComplete, minLen
           autoComplete={autoComplete}
           className="h-full min-w-0 flex-1 bg-transparent text-base outline-none"
           id={id}
+          maxLength={maxLength}
           minLength={minLength}
           onChange={(event) => onChange(event.target.value)}
           required

@@ -22,8 +22,8 @@ export function useAuth(): AuthContextValue {
 }
 
 /**
- * Perfil y rol para la sesión de Supabase. La API lo resuelve todo en una llamada: la primera
- * cuenta del sistema queda como administrador, las demás como cajero, y rechaza las desactivadas.
+ * Perfil, rol y negocio para la sesión de Supabase. La API rechaza las cuentas desactivadas y las
+ * que no pertenecen a ningún negocio.
  */
 const loadProfile = () => apiFetch<AppUser>("/auth/session", { method: "POST" });
 

@@ -118,9 +118,9 @@ export function LoginForm({ initialError, next }: LoginFormProps) {
       </form>
 
       <p className="border-t border-[#eaedff] pt-4 text-center text-sm text-[#3f493f]">
-        ¿No tienes cuenta?{" "}
+        ¿Tienes un negocio nuevo?{" "}
         <Link className="inline-flex items-center gap-1 py-2 font-semibold text-[#00652c] underline" href="/register">
-          Crear cuenta <Icon name="arrow" />
+          Regístralo <Icon name="arrow" />
         </Link>
       </p>
     </div>
