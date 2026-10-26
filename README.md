@@ -7,7 +7,7 @@ Interfaz de punto de venta e inventario construida con Next.js 16 (App Router), 
 | Ruta | Acceso | Descripción |
 |---|---|---|
 | `/login` | Pública | Inicio de sesión con correo y contraseña o con Google; recuperación de contraseña. |
-| `/register` | Pública | Crear cuenta (cualquier vendedor), con correo y contraseña o con Google. La primera cuenta del sistema es la del administrador. |
+| `/register` | Pública | Registrar un negocio: nombre de la tienda y la cuenta de su dueño, que queda como administrador. |
 | `/reset-password` | Enlace del correo | Crear una nueva contraseña. |
 | `/pos` | Sesión | Catálogo por categorías, búsqueda, lector de código de barras, ticket y cobro. |
 | `/inventory` | Sesión | Indicadores, búsqueda por nombre/código/SKU, filtros de existencias y ajuste de stock. |
@@ -23,9 +23,9 @@ La gestionan [Supabase Auth](https://supabase.com/docs/guides/auth) y la API de 
 
 - **Supabase** guarda las cuentas (correo y contraseña o Google), confirma correos y recupera contraseñas. La sesión vive en cookies (`@supabase/ssr`).
 - **La API** (`backend/`) decide quién entra y con qué rol: una cuenta de Supabase sin perfil en el sistema no accede.
-- **Registro:** cualquier vendedor crea su cuenta en `/register` (correo o Google) y entra como cajero. La primera cuenta del sistema es la del administrador, que además puede dar de alta empleados, cambiar roles y desactivar cuentas desde Ajustes.
+- **Registro de negocios:** cada tienda de abarrotes se registra en `/register`. La API (`POST /auth/register`) crea la cuenta del dueño ya confirmada, sin correo de confirmación, como administrador de ese negocio, y el formulario inicia la sesión. El administrador da de alta a sus empleados, cambia roles y desactiva cuentas desde Ajustes; solo ve las de su negocio. El nombre del negocio aparece en el encabezado.
 - `src/proxy.ts` renueva la sesión y redirige al login las pantallas protegidas cuando no hay sesión.
-- `src/components/auth/AuthProvider.tsx` abre la sesión en la API (`POST /auth/session`) antes de mostrar una pantalla protegida: recibe el perfil y el rol. Si la cuenta está desactivada, cierra la sesión y muestra el motivo.
+- `src/components/auth/AuthProvider.tsx` abre la sesión en la API (`POST /auth/session`) antes de mostrar una pantalla protegida: recibe el perfil, el rol y el negocio. Si la cuenta está desactivada o no pertenece a ningún negocio, cierra la sesión y muestra el motivo.
 - La configuración de Google (Google Cloud y Supabase) está en `backend/README.md`, sección "Inicio de sesión con Google".
 - `src/app/auth/callback/route.ts` recibe a Google, la confirmación de correo y la recuperación de contraseña. Solo redirige a rutas internas.
 

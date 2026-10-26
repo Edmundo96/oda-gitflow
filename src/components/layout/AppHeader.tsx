@@ -22,7 +22,7 @@ export function AppHeader({ subtitle }: AppHeaderProps) {
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <span className="truncate font-semibold">Ojo de Dios</span>
+              <span className="truncate font-semibold">{user.business.name}</span>
               <span className="shrink-0 rounded-full bg-[#15803d] px-2 py-0.5 text-xs font-bold text-white">Caja 1</span>
             </div>
             <p className="flex min-w-0 items-center gap-1.5 text-xs text-[#00652c]">
