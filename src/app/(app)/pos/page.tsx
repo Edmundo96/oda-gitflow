@@ -119,7 +119,7 @@ export default function PosPage() {
     if (!Number.isFinite(nextQuantity)) return;
 
     if (nextQuantity > cartItem.product.stock) {
-      showToast("Stock insuficiente", { tone: "error" });
+    showToast(`Stock insuficiente: quedan ${cartItem.product.stock} piezas`, { tone: "error" });
       return;
     }
 
